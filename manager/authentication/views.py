@@ -1,5 +1,10 @@
 from django.shortcuts import render
+from core.models import User, Token
 from .serializer import UserSerializer
+from django.contrib.auth.hashers import make_password, check_password
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,4 +16,108 @@ class Register(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+register_view = Register.as_view()
 
+class ResetPassword(APIView):
+    
+    def post(self, request, format=None):
+        
+        email = request.data.get("email")
+        password = request.data.get("password")
+    
+        if email:
+            email = email.strip()
+            if email == "":
+                return Response({"email":"Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"email":"Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not password or password=="":
+            return Response({"password":"Password is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error":"User not found"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        user.password = make_password(password=password)
+        user.save()
+    
+        return Response({"email":email},status=status.HTTP_202_ACCEPTED)
+            
+reset_password_view = ResetPassword.as_view()
+
+class Login(APIView):
+    def post(self, request, format=None):
+        
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        if email:
+            email = email.strip()
+            if email == "":
+                return Response({"email":"Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"email":"Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not password or password=="":
+            return Response({"password":"Password is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error":"User not found"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        is_owner = check_password(password,user.password)
+        
+        print(check_password(password,user.password))
+        
+        if not is_owner:
+            return Response({"error":"Invalid email or password"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        
+        refreshToken = RefreshToken.for_user(user)
+        accessToken = refreshToken.access_token
+        
+        Token.objects.create(refresh_token=str(refreshToken), user=user)
+        
+        return Response({"access_token":str(accessToken),"refresh_token":str(refreshToken)},status=status.HTTP_200_OK)
+    
+login_view = Login.as_view()
+
+class Logout(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, format=None):
+        try:
+            refreshToken = request.data.get("refresh_token")
+            
+            if refreshToken:
+                refreshToken = refreshToken.strip()
+                if refreshToken == "":
+                    return Response({"error":"Refresh token required"},status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({"error":"Refresh token required"},status=status.HTTP_400_BAD_REQUEST)
+            
+            token = RefreshToken(refreshToken)
+            token.blacklist()
+            
+            Token.objects.filter(refresh_token=str(refreshToken)).delete()
+            
+            return Response({"message":"Logged out Successfully"},status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error":"Unbale to logout"},status=status.HTTP_400_BAD_REQUEST)
+    
+logout_view = Logout.as_view()
+
+# class ResetPassword(APIView):
+#     def post(self, request, format=None):
+#         serializer = ResetPasswordSerializer(data=request.data, partial=True)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+#         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            
+# reset_password_view = ResetPassword.as_view()
