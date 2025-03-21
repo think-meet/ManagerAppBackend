@@ -99,6 +99,7 @@ class Logout(APIView):
             token.blacklist()
             
             Token.objects.filter(user_id=user.id).delete()
+            user._is_authenticated = False
             
             return Response({"message":"Logged out Successfully"},status=status.HTTP_200_OK)
         except Exception as e:
