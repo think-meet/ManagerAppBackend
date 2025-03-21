@@ -9,6 +9,11 @@ class User(models.Model):
     def __str__(self):
         return f"User id {self.id}, email {self.email}"
     
+    @property
+    def is_authenticated(self):
+        """Ensures only authenticated users are marked as authenticated"""
+        return hasattr(self, "_is_authenticated") and self._is_authenticated
+    
 class Item(models.Model):
     id = models.AutoField(primary_key=True)
     item_name = models.CharField(max_length=100,blank=False,null=False)

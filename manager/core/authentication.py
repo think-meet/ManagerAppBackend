@@ -43,6 +43,7 @@ class CustomJWTAuthentication(BaseAuthentication):
             tokenValid, tokenPayload = decode_access_token(accessToken)
             if tokenValid:
                 user = User.objects.get(id=tokenPayload.get('user_id'))
+                user._is_authenticated = True
             else:
                 raise AuthenticationFailed('Access token expired or invalid')
  

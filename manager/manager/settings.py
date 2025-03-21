@@ -139,9 +139,12 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_AUTHENTICATION_CLASSES':(
+    # 'DEFAULT_AUTHENTICATION_CLASSES':[
     #     'core.authentication.CustomJWTAuthentication',
-    # )
+    # ]
+    # "DEFAULT_PERMISSION_CLASSES": (
+    #     "rest_framework.permissions.IsAuthenticated",
+    # ),
 }
 
 SIMPLE_JWT = {
@@ -152,9 +155,7 @@ SIMPLE_JWT = {
     "ALGORITHM": "HS256",
     "SIGNING_KEY": os.getenv("SIGNING_KEY"),
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'CHECK_BLACKLIST': True,
     "USER_ID_FIELD": "id",  # Your custom user model must have an "id" field
     "USER_ID_CLAIM": "user_id",  # This is how user_id is stored in the token
 }
-
-# 👇 Ensure Django uses your custom User model (if you extended it)
-AUTH_USER_MODEL = "core.User"

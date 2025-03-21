@@ -66,7 +66,6 @@ class Login(APIView):
         
         try:
             user = User.objects.get(email=email)
-            print(user)
         except User.DoesNotExist:
             return Response({"error":"User not found"},status=status.HTTP_401_UNAUTHORIZED)
         
@@ -75,7 +74,8 @@ class Login(APIView):
         if not is_owner:
             return Response({"error":"Invalid email or password"},status=status.HTTP_401_UNAUTHORIZED)
         
-        refreshToken = RefreshToken.for_user(user)
+        refreshToken = RefreshToken()
+        refreshToken["user_id"] = user.id
         accessToken = refreshToken.access_token
         
         Token.objects.create(refresh_token=str(refreshToken), user=user)
@@ -86,7 +86,7 @@ login_view = Login.as_view()
 
 class Logout(APIView):
     authentication_classes = [CustomJWTAuthentication]
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     def post(self, request, format=None):
         try:
