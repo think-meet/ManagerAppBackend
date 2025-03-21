@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'core',
     'authentication',
     'items',
@@ -138,9 +139,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES':(
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    # 'DEFAULT_AUTHENTICATION_CLASSES':(
+    #     'core.authentication.CustomJWTAuthentication',
+    # )
 }
 
 SIMPLE_JWT = {
@@ -148,5 +149,12 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": os.getenv("SIGNING_KEY"),
     'AUTH_HEADER_TYPES': ('Bearer',),
+    "USER_ID_FIELD": "id",  # Your custom user model must have an "id" field
+    "USER_ID_CLAIM": "user_id",  # This is how user_id is stored in the token
 }
+
+# 👇 Ensure Django uses your custom User model (if you extended it)
+AUTH_USER_MODEL = "core.User"

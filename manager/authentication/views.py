@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from core.models import User, Token
+from core.authentication import CustomJWTAuthentication
 from .serializer import UserSerializer
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -66,16 +66,14 @@ class Login(APIView):
         
         try:
             user = User.objects.get(email=email)
+            print(user)
         except User.DoesNotExist:
             return Response({"error":"User not found"},status=status.HTTP_401_UNAUTHORIZED)
         
         is_owner = check_password(password,user.password)
-        
-        print(check_password(password,user.password))
-        
+                
         if not is_owner:
             return Response({"error":"Invalid email or password"},status=status.HTTP_401_UNAUTHORIZED)
-        
         
         refreshToken = RefreshToken.for_user(user)
         accessToken = refreshToken.access_token
@@ -87,27 +85,24 @@ class Login(APIView):
 login_view = Login.as_view()
 
 class Logout(APIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [CustomJWTAuthentication]
+    # permission_classes = [IsAuthenticated]
     
     def post(self, request, format=None):
         try:
-            refreshToken = request.data.get("refresh_token")
+            user = request.user
+            accessToken = request.auth
             
-            if refreshToken:
-                refreshToken = refreshToken.strip()
-                if refreshToken == "":
-                    return Response({"error":"Refresh token required"},status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({"error":"Refresh token required"},status=status.HTTP_400_BAD_REQUEST)
+            tokenObj = Token.objects.get(user_id=user.id)
             
-            token = RefreshToken(refreshToken)
+            token = RefreshToken(tokenObj.refresh_token)
             token.blacklist()
             
-            Token.objects.filter(refresh_token=str(refreshToken)).delete()
+            Token.objects.filter(user_id=user.id).delete()
             
             return Response({"message":"Logged out Successfully"},status=status.HTTP_200_OK)
         except Exception as e:
+            print(e)
             return Response({"error":"Unbale to logout"},status=status.HTTP_400_BAD_REQUEST)
     
 logout_view = Logout.as_view()
