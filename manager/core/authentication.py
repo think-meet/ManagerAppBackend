@@ -32,10 +32,15 @@ class CustomJWTAuthentication(BaseAuthentication):
                 tokenPayload = decode_expired_token(accessToken)
                 
             user = User.objects.get(id=tokenPayload.get('user_id'))
-            refreshToken = Token.objects.get(user_id=user.id).refresh_token
+            
+            try:
+                refreshToken = Token.objects.get(user_id=user.id).refresh_token
+            except Exception as e:
+                raise AuthenticationFailed('Refresh token does not exist')
                         
             if is_refresh_token_valid(refreshToken):
                 accessToken = RefreshToken(refreshToken).access_token
+                user._is_authenticated = True
             else:
                 raise AuthenticationFailed('Refresh token expired or invalid')
                 
@@ -61,7 +66,7 @@ def is_refresh_token_valid(refresh_token):
 def decode_access_token(access_token):
     try:
         token = AccessToken(access_token)
-        return True,token.payload  
+        return True, token.payload  
     except Exception as e:
         return False, None  # Invalid or expired token
 

@@ -103,10 +103,29 @@ class Logout(APIView):
             
             return Response({"message":"Logged out Successfully"},status=status.HTTP_200_OK)
         except Exception as e:
-            print(e)
             return Response({"error":"Unbale to logout"},status=status.HTTP_400_BAD_REQUEST)
     
 logout_view = Logout.as_view()
+
+class RefreshAccessToken(APIView):
+    
+    authentication_classes = [CustomJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, format=None):
+        print(f"User: {request.user}")  # Debug
+        print(f"User is_authenticated: {request.user.is_authenticated}")  # Debug
+        
+        try:
+            user = request.user
+            accessToken = request.auth
+            
+            return Response({"access_token":str(accessToken)},status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error":"Unable to generate refresh token"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+refresh_access_token = RefreshAccessToken.as_view()
+
 
 # class ResetPassword(APIView):
 #     def post(self, request, format=None):
