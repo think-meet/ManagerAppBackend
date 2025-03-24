@@ -10,6 +10,9 @@ from rest_framework.response import Response
 from rest_framework import status
 
 class Register(APIView):
+    
+    serializer_class = UserSerializer
+    
     def post(self, request, format=None):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -20,6 +23,8 @@ class Register(APIView):
 register_view = Register.as_view()
 
 class ResetPassword(APIView):
+    
+    serializer_class = UserSerializer
     
     def post(self, request, format=None):
         
@@ -49,6 +54,9 @@ class ResetPassword(APIView):
 reset_password_view = ResetPassword.as_view()
 
 class Login(APIView):
+    
+    serializer_class = UserSerializer
+    
     def post(self, request, format=None):
         
         email = request.data.get('email')
@@ -87,6 +95,7 @@ login_view = Login.as_view()
 class Logout(APIView):
     authentication_classes = [CustomJWTAuthentication]
     permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer 
     
     def post(self, request, format=None):
         try:
@@ -111,6 +120,7 @@ class RefreshAccessToken(APIView):
     
     authentication_classes = [CustomJWTAuthentication]
     permission_classes = [IsAuthenticated]
+    # serializer_class = 
     
     def post(self, request, format=None):
         print(f"User: {request.user}")  # Debug

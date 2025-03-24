@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'drf_spectacular',
     'core',
     'authentication',
     'items',
@@ -145,6 +146,7 @@ REST_FRAMEWORK = {
     # "DEFAULT_PERMISSION_CLASSES": (
     #     "rest_framework.permissions.IsAuthenticated",
     # ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
 }
 
 SIMPLE_JWT = {
@@ -158,4 +160,11 @@ SIMPLE_JWT = {
     'CHECK_BLACKLIST': True,
     "USER_ID_FIELD": "id",  # Your custom user model must have an "id" field
     "USER_ID_CLAIM": "user_id",  # This is how user_id is stored in the token
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Manager Backend',
+    'DESCRIPTION': 'Bancked for Manager',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False
 }

@@ -18,7 +18,8 @@ class ItemSerializer(serializers.ModelSerializer):
         validated_data['user'] = request.user
         return super().create(validated_data)
     
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data.pop('user',None)
-        return data
+    # def to_representation(self, instance):
+    #     print("  called")
+    #     data = super().to_representation(instance)
+    #     data.pop('user',None)
+    #     return data

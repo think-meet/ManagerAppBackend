@@ -34,7 +34,11 @@ class CustomJWTAuthentication(BaseAuthentication):
             user = User.objects.get(id=tokenPayload.get('user_id'))
             
             try:
-                refreshToken = Token.objects.get(user_id=user.id).refresh_token
+                latest_token = Token.objects.filter(user_id=user.id).order_by('-created_at').first()
+                if latest_token is None:
+                    raise AuthenticationFailed('Refresh token does not exist')
+                
+                refreshToken = latest_token.refresh_token
             except Exception as e:
                 raise AuthenticationFailed('Refresh token does not exist')
                         

@@ -1,0 +1,340 @@
+openapi: 3.0.3
+info:
+  title: Manager Backend
+  version: 1.0.0
+  description: Bancked for Manager
+paths:
+  /api/items/:
+    get:
+      operationId: api_items_retrieve
+      tags:
+      - api
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+          description: ''
+    post:
+      operationId: api_items_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Item'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Item'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+          description: ''
+    patch:
+      operationId: api_items_partial_update
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedItem'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+          description: ''
+  /api/items/upload/:
+    post:
+      operationId: api_items_upload_create
+      tags:
+      - api
+      responses:
+        '200':
+          description: No response body
+  /api/transactions/:
+    get:
+      operationId: api_transactions_retrieve
+      tags:
+      - api
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+          description: ''
+    post:
+      operationId: api_transactions_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+          description: ''
+  /api/user/login/:
+    post:
+      operationId: api_user_login_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/user/logout/:
+    post:
+      operationId: api_user_logout_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/user/refresh-access-token/:
+    post:
+      operationId: api_user_refresh_access_token_create
+      tags:
+      - api
+      responses:
+        '200':
+          description: No response body
+  /api/user/register/:
+    post:
+      operationId: api_user_register_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/user/reset-password/:
+    post:
+      operationId: api_user_reset_password_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+components:
+  schemas:
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        item_name:
+          type: string
+          maxLength: 100
+        item_required:
+          type: boolean
+        item_cost:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        item_stock:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        min_quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - id
+      - item_cost
+      - item_name
+      - item_stock
+      - min_quantity
+    PatchedItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        item_name:
+          type: string
+          maxLength: 100
+        item_required:
+          type: boolean
+        item_cost:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        item_stock:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        min_quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        item_name:
+          type: string
+          maxLength: 100
+        item_cost:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        transaction_date_time:
+          type: string
+          maxLength: 100
+        transaction_type:
+          type: string
+          maxLength: 10
+        transaction_units:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        final_stock:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        user:
+          type: integer
+          readOnly: true
+      required:
+      - final_stock
+      - id
+      - item_cost
+      - item_name
+      - transaction_date_time
+      - transaction_type
+      - transaction_units
+      - user
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - id
+      - password
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
