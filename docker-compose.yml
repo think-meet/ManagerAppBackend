@@ -1,22 +1,18 @@
 version: '3.8'
 
 services:
+  # Django Backend Service
   web:
-    build: .
-    container_name: manager_backend
-    restart: always
-    depends_on:
-      - db
+    image: manager:latest  # Replace with your actual image name and tag
+    container_name: manager-backend
     environment:
-      DB_NAME: mydatabase
-      DB_USER: myuser
-      DB_PASSWORD: mypassword
-      DB_HOST: mydb.example.com  # Replace with EC2 IP or RDS endpoint
-      DB_PORT: 5432
+      - DB_NAME: manager
+      - DB_USER: postgres
+      - DB_PASSWORD: think
+      - DB_HOST: 172.31.9.122
+      - DB_PORT: 5432
     ports:
       - "8000:8000"
-    command: >
-      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-
-volumes:
-  postgres_data:
+    networks:
+      - backend_network
+    
