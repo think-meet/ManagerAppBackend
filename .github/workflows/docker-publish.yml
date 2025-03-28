@@ -58,7 +58,7 @@ jobs:
             cd /home/ubuntu/manager  
             
             # Stop and remove existing containers safely
-            sudo docker compose down || true  
+            sudo docker-compose down || true  
             sudo docker stop $(sudo docker ps -aq) || true
             sudo docker rm $(sudo docker ps -aq) || true
             
@@ -69,4 +69,4 @@ jobs:
             sudo docker pull mehtameet2802/manager:latest  
             
             # Start the containers with latest image
-            sudo docker compose up -d --pull always
+            sudo docker-compose up -d --pull always
