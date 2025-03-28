@@ -126,6 +126,13 @@ jobs:
       - name: Debug - List Files in GitHub Actions
         run: ls -lah
 
+      - name: List files (Detailed)
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files in workspace:"
+          ls -la
+
       - name: Copy docker-compose.yml to EC2
         uses: appleboy/scp-action@master
         with:
