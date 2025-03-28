@@ -2,17 +2,10 @@ version: '3.8'
 
 services:
   # Django Backend Service
-  web:
-    image: manager:latest  # Replace with your actual image name and tag
-    container_name: manager-backend
-    environment:
-      - DB_NAME: manager
-      - DB_USER: postgres
-      - DB_PASSWORD: think
-      - DB_HOST: 172.31.9.122
-      - DB_PORT: 5432
+  backend:
+    image: mehtameet2802/manager:latest
+    container_name: manager_backend
+    restart: unless-stopped
+    env_file: .env
     ports:
       - "8000:8000"
-    networks:
-      - backend_network
-    

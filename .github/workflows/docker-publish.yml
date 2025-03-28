@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build, Push and Deploy with Manual Approval 
 
 on:
   push:
@@ -33,3 +33,42 @@ jobs:
           context: .
           push: true
           tags: mehtameet2802/manager:latest
+
+  manual-approval:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Manual Approval
+        uses: hmarr/auto-approve-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        timeout-minutes: 8  # Timeout after 8 minutes if no approval
+
+  deploy:
+    needs: manual-approval
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Connect to EC2 and Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Go to the project directory
+            cd /home/ubuntu/manager  
+            
+            # Stop and remove existing containers safely
+            sudo docker compose down || true  
+            sudo docker stop $(sudo docker ps -aq) || true
+            sudo docker rm $(sudo docker ps -aq) || true
+            
+            # Remove all existing images (forces deletion even if used)
+            sudo docker rmi -f $(sudo docker images -q) || true  
+            
+            # Pull the latest image
+            sudo docker pull mehtameet2802/manager:latest  
+            
+            # Start the containers with latest image
+            sudo docker compose up -d --pull always 
