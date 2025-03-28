@@ -109,16 +109,16 @@ jobs:
           push: true
           tags: mehtameet2802/manager:latest
 
-  manual-approval:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    environment: production  # Requires approval in GitHub Environments
-    steps:
-      - name: Wait for Manual Approval
-        run: echo "Waiting for manual approval. Approve this job in GitHub Actions."
+  # manual-approval:
+  #   needs: build-and-push
+  #   runs-on: ubuntu-latest
+  #   environment: production  # Requires approval in GitHub Environments
+  #   steps:
+  #     - name: Wait for Manual Approval
+  #       run: echo "Waiting for manual approval. Approve this job in GitHub Actions."
 
   deploy:
-    needs: manual-approval
+    # needs: manual-approval
     runs-on: ubuntu-latest
 
     steps:
