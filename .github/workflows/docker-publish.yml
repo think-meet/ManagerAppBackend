@@ -134,6 +134,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "docker-compose.yml"
           target: "/home/ubuntu/manager/"
+          overwrite: true
+          debug: true
 
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v1.0.3
