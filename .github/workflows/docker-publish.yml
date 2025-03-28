@@ -37,12 +37,10 @@ jobs:
   manual-approval:
     needs: build-and-push
     runs-on: ubuntu-latest
+    environment: production  # Requires approval in GitHub Environments
     steps:
       - name: Wait for Manual Approval
-        uses: hmarr/auto-approve-action@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-        timeout-minutes: 8  # Timeout after 8 minutes if no approval
+        run: echo "Waiting for manual approval. Approve this job in GitHub Actions."
 
   deploy:
     needs: manual-approval
@@ -71,4 +69,4 @@ jobs:
             sudo docker pull mehtameet2802/manager:latest  
             
             # Start the containers with latest image
-            sudo docker compose up -d --pull always 
+            sudo docker compose up -d --pull always  
