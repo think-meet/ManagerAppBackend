@@ -130,15 +130,15 @@ jobs:
 
       - name: Stop and remove existing containers
         run: |
-          docker compose down || true
-          docker stop $(docker ps -aq) || true
-          docker rm $(docker ps -aq) || true
+          sudo docker compose down || true
+          sudo docker stop $(docker ps -aq) || true
+          sudo docker rm $(docker ps -aq) || true
 
       - name: Remove old Docker images
-        run: docker rmi -f $(docker images -q) || true
+        run: sudo docker rmi -f $(docker images -q) || true
 
       - name: Pull latest Docker image
-        run: docker pull mehtameet2802/manager:latest
+        run: sudo docker pull mehtameet2802/manager:latest
 
       - name: Run Docker Compose with remote `.env`
-        run: docker compose up -d --pull always
+        run: sudo docker compose up -d --pull always
