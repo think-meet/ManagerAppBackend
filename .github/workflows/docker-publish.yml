@@ -132,6 +132,13 @@ jobs:
           pwd
           echo "Files in workspace:"
           ls -la
+      
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: List files
+        run: ls -la
 
       - name: Copy docker-compose.yml to EC2
         uses: appleboy/scp-action@master
