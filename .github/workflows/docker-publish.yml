@@ -118,8 +118,7 @@ jobs:
         run: echo "Waiting for manual approval. Approve this job in GitHub Actions."
 
   deploy:
-    # needs: manual-approval
-    needs: build-and-push
+    needs: manual-approval
     runs-on: ubuntu-latest
 
     steps:      
