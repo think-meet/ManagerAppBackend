@@ -122,23 +122,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4  # Ensure docker-compose.yml is available
+      - name: Checkout Repository (To Access docker-compose.yml)
+        uses: actions/checkout@v4
 
-      - name: Set Remote Docker Host
-        run: echo "DOCKER_HOST=ssh://${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" >> $GITHUB_ENV
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Navigate to the project directory where .env is stored
+            cd /home/ubuntu/manager
 
-      - name: Stop and remove existing containers
+            # Remove all existing containers safely
+            sudo docker stop $(sudo docker ps -aq) || true
+            sudo docker rm $(sudo docker ps -aq) || true
+            
+            # Remove all existing images (forces deletion even if used)
+            sudo docker rmi -f $(sudo docker images -q) || true  
+            
+            # Pull the latest image
+            sudo docker pull mehtameet2802/manager:latest  
+
+      - name: Start Containers Using docker-compose.yml from GitHub
         run: |
-          sudo docker compose down || true
-          sudo docker stop $(docker ps -aq) || true
-          sudo docker rm $(docker ps -aq) || true
-
-      - name: Remove old Docker images
-        run: sudo docker rmi -f $(docker images -q) || true
-
-      - name: Pull latest Docker image
-        run: sudo docker pull mehtameet2802/manager:latest
-
-      - name: Run Docker Compose with remote `.env`
-        run: sudo docker compose up -d --pull always
+          DOCKER_HOST=ssh://${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+          docker compose -f docker-compose.yml --env-file /home/ubuntu/manager/.env up -d --pull always
