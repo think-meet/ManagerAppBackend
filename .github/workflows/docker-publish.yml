@@ -119,6 +119,7 @@ jobs:
 
   deploy:
     # needs: manual-approval
+    needs: build-and-push
     runs-on: ubuntu-latest
 
     steps:
