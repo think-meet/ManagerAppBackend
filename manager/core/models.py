@@ -51,3 +51,22 @@ class Token(models.Model):
     
     def __str__(self):
         return f"Token id {self.id}, user {self.user.email}"
+    
+class Code(models.Model):
+    id = models.AutoField(primary_key=True)
+    code = models.TextField(max_length=4)
+    creation_epoch = models.IntegerField()
+    expiry_epoch = models.IntegerField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="codes")
+    
+    def __str__(self):
+        return f"Code id {id}, user {self.user.email}"
+    
+class Connection(models.Model):
+    id = models.AutoField(primary_key=True)
+    connection_from = models.ForeignKey(User, on_delete=models.CASCADE, related_name="connection_from")
+    connection_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="connection_to")
+    
+    def __str__(self):
+        return f"Connection id {self.id}, from {self.connection_from.email} to {self.connection_to.email}"
+

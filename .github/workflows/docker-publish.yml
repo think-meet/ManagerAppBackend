@@ -116,6 +116,7 @@ jobs:
     steps:
       - name: Wait for Manual Approval
         run: echo "Waiting for manual approval. Approve this job in GitHub Actions."
+    timeout-minutes: 10
 
   deploy:
     needs: manual-approval
